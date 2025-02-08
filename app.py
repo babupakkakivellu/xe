@@ -6,6 +6,8 @@ import os
 import tempfile
 import sqlite3
 import pickle
+import time  # For retry delays
+import uuid  # For generating unique filenames
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -70,39 +72,49 @@ def index():
     if request.method == 'POST':
         # Get form data
         customer_name = request.form['customer_name']
-        documents = request.files.getlist('documents')  # Multiple files
+        documents = request.files.getlist('documents')
         pages_color = ', '.join(request.form.getlist('pages_color'))
         pages_to_print = request.form['pages_to_print']
         special_instructions = request.form['special_instructions']
 
         if not documents or all(doc.filename == '' for doc in documents):
-            flash('No selected files')
-            return redirect(request.url)
+            return jsonify({'success': False, 'message': 'No selected files'})
 
         # Parse pages to print
         parsed_pages = parse_pages(pages_to_print)
         if not parsed_pages:
-            flash("Please enter valid page numbers.")
-            return redirect(request.url)
+            return jsonify({'success': False, 'message': 'Please enter valid page numbers.'})
 
-        # Save and upload each file
+        # Process each file
         for document in documents:
             if document.filename == '':
                 continue
 
-            # Save the uploaded file temporarily using tempfile
-            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                filepath = temp_file.name  # Get the temporary file path
-                document.save(filepath)  # Save the uploaded file to the temporary location
+            # Create a unique temporary file path
+            temp_dir = tempfile.gettempdir()
+            filepath = os.path.join(temp_dir, f"upload_{uuid.uuid4()}.tmp")
+            media = None
 
-            # Upload the file to Google Drive
             try:
+                # Save the uploaded file to the temporary location
+                document.save(filepath)
+
+                # Upload the file to Google Drive
                 file_metadata = {
                     'name': document.filename,
                     'parents': [FOLDER_ID]
                 }
+                
+                # Create the media file upload object
                 media = MediaFileUpload(filepath, resumable=True)
-                file = service.files().create(body=file_metadata, media_body=media, fields='id, webViewLink').execute()
+                
+                # Perform the upload
+                file = service.files().create(
+                    body=file_metadata,
+                    media_body=media,
+                    fields='id, webViewLink'
+                ).execute()
+                
                 drive_link = file.get('webViewLink')
 
                 # Save order details to the database
@@ -116,14 +128,35 @@ def index():
                 conn.close()
 
             except Exception as e:
-                flash(f'Error uploading file: {str(e)}')
+                print(f"Error uploading file: {str(e)}")
+                return jsonify({'success': False, 'message': f'Error uploading file: {str(e)}'})
+            
             finally:
-                # Clean up the temporary file
-                if os.path.exists(filepath):
-                    os.remove(filepath)
+                # Clean up resources
+                if media:
+                    media._fd.close()  # Close the file descriptor used by MediaFileUpload
+                
+                # Retry file deletion with exponential backoff
+                max_retries = 5
+                base_delay = 0.5  # Start with 0.5 second delay
+                
+                for attempt in range(max_retries):
+                    try:
+                        if os.path.exists(filepath):
+                            os.close(os.open(filepath, os.O_RDONLY))  # Close any remaining file handles
+                            os.remove(filepath)
+                            print(f"Temporary file deleted successfully: {filepath}")
+                            break
+                    except (PermissionError, OSError) as e:
+                        if attempt == max_retries - 1:  # Last attempt
+                            print(f"Failed to delete temporary file after {max_retries} attempts: {filepath}")
+                            print(f"Error: {str(e)}")
+                        else:
+                            delay = base_delay * (2 ** attempt)  # Exponential backoff
+                            print(f"Attempt {attempt + 1} failed to delete file: {filepath}. Retrying in {delay} seconds...")
+                            time.sleep(delay)
 
-        flash('Files uploaded successfully!')
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Files uploaded successfully!'})
 
     return render_template('index.html')
 
@@ -162,28 +195,36 @@ def admin():
 # Mark order as completed
 @app.route('/mark_done/<int:order_id>', methods=['POST'])
 def mark_done(order_id):
-    conn = sqlite3.connect('orders.db')
-    c = conn.cursor()
-    c.execute('UPDATE orders SET status = "Completed" WHERE id = ?', (order_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True})
+    try:
+        conn = sqlite3.connect('orders.db')
+        c = conn.cursor()
+        c.execute('UPDATE orders SET status = "Completed" WHERE id = ?', (order_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error marking order as done: {str(e)}")
+        return jsonify({'success': False}), 500
 
 # Remove order
 @app.route('/remove_order/<int:order_id>', methods=['POST'])
 def remove_order(order_id):
-    conn = sqlite3.connect('orders.db')
-    c = conn.cursor()
-    c.execute('DELETE FROM orders WHERE id = ?', (order_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True})
+    try:
+        conn = sqlite3.connect('orders.db')
+        c = conn.cursor()
+        c.execute('DELETE FROM orders WHERE id = ?', (order_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error removing order: {str(e)}")
+        return jsonify({'success': False}), 500
 
 # Logout route
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True)

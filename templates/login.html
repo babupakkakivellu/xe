@@ -3,27 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header class="header">
-        <h1>Admin Login</h1>
+        <h1 class="fade-in">Xerox Shop</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="fade-in">Home</a></li>
+                <li><a href="{{ url_for('index') }}" class="fade-in">Place Order</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main class="container">
-        <div class="card">
-            <h2>Login</h2>
+        <div class="card fade-in">
+            <h2>Admin Login</h2>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
             <form action="{{ url_for('login') }}" method="POST">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
 
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
 
                 <button type="submit">Login</button>
             </form>
         </div>
     </main>
+
+    <footer class="footer fade-in">
+        <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
+    </footer>
 </body>
 </html>

@@ -1,10 +1,129 @@
+// Initialize event handlers when DOM is ready
+function initializeEventHandlers() {
+    console.log('Initializing event handlers...');
+
+    // Handle Mark as Done
+    document.body.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('mark-done-btn')) {
+            e.preventDefault();
+            console.log('Mark as Done clicked');
+            
+            const row = e.target.closest('tr');
+            if (!row) {
+                console.error('Could not find parent row');
+                return;
+            }
+
+            const orderId = row.dataset.orderId;
+            console.log('Order ID:', orderId);
+
+            // Send request to mark as done
+            fetch(`/mark_done/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Move row to completed table
+                    const completedTable = document.querySelector('#completedOrdersTable tbody');
+                    if (completedTable) {
+                        // Clone the row and remove the actions column
+                        const newRow = row.cloneNode(true);
+                        const actionsCell = newRow.querySelector('td:last-child');
+                        if (actionsCell) {
+                            actionsCell.remove();
+                        }
+                        completedTable.appendChild(newRow);
+                        row.remove();
+                    }
+                } else {
+                    alert('Error: ' + (data.message || 'Could not mark as done'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error marking as done');
+            });
+        }
+    });
+
+    // Handle Remove
+    document.body.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('remove-order-btn')) {
+            e.preventDefault();
+            console.log('Remove clicked');
+
+            if (!confirm('Are you sure you want to remove this order?')) {
+                return;
+            }
+
+            const row = e.target.closest('tr');
+            if (!row) {
+                console.error('Could not find parent row');
+                return;
+            }
+
+            const orderId = row.dataset.orderId;
+            console.log('Order ID:', orderId);
+
+            // Send request to remove
+            fetch(`/remove_order/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    row.remove();
+                } else {
+                    alert('Error: ' + (data.message || 'Could not remove order'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error removing order');
+            });
+        }
+    });
+
+    // Handle file input changes
+    const fileInput = document.getElementById('documents');
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileSelection);
+    }
+
+    // Handle form submission
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', handleFormSubmission);
+    }
+
+    // Handle modal close button
+    const closeModalBtn = document.getElementById('closeModal');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    console.log('Event handlers initialized');
+}
+
 // Global array to store selected files
 let selectedFiles = [];
 
-// Handle file input changes (incremental file selection)
-document.getElementById('documents').addEventListener('change', function () {
+// Handle file selection
+function handleFileSelection(event) {
     const fileListDiv = document.getElementById('file-list');
-    const files = this.files;
+    const files = event.target.files;
 
     // Add new files to the global array
     for (let i = 0; i < files.length; i++) {
@@ -14,14 +133,15 @@ document.getElementById('documents').addEventListener('change', function () {
         }
     }
 
-    // Update the displayed file list
     updateFileList();
-});
+}
 
-// Function to update the displayed file list
+// Update the displayed file list
 function updateFileList() {
     const fileListDiv = document.getElementById('file-list');
-    fileListDiv.innerHTML = ''; // Clear previous list
+    if (!fileListDiv) return;
+
+    fileListDiv.innerHTML = '';
 
     if (selectedFiles.length > 0) {
         const ul = document.createElement('ul');
@@ -29,13 +149,12 @@ function updateFileList() {
             const li = document.createElement('li');
             li.textContent = file.name;
 
-            // Add a remove button for each file
             const removeBtn = document.createElement('span');
             removeBtn.textContent = '×';
             removeBtn.className = 'remove-file-btn';
-            removeBtn.onclick = function () {
-                selectedFiles.splice(index, 1); // Remove the file from the array
-                updateFileList(); // Re-render the file list
+            removeBtn.onclick = function() {
+                selectedFiles.splice(index, 1);
+                updateFileList();
             };
 
             li.appendChild(removeBtn);
@@ -47,8 +166,8 @@ function updateFileList() {
     }
 }
 
-// Handle form submission with progress bar
-document.getElementById('uploadForm').addEventListener('submit', function (e) {
+// Handle form submission
+function handleFormSubmission(e) {
     e.preventDefault();
 
     if (selectedFiles.length === 0) {
@@ -57,91 +176,79 @@ document.getElementById('uploadForm').addEventListener('submit', function (e) {
     }
 
     const formData = new FormData();
-    formData.append('customer_name', document.getElementById('customer_name').value);
-    formData.append('pages_to_print', document.getElementById('pages_to_print').value);
-    formData.append('special_instructions', document.getElementById('special_instructions').value);
-
-    // Append all selected files to the form data
-    selectedFiles.forEach((file, index) => {
-        formData.append(`documents`, file);
+    
+    // Add form fields
+    const fields = ['customer_name', 'pages_to_print', 'special_instructions'];
+    fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element) {
+            formData.append(field, element.value);
+        }
     });
 
-    // Simulate progress bar
+    // Add files
+    selectedFiles.forEach(file => {
+        formData.append('documents', file);
+    });
+
+    // Show progress bar
     const progressBar = document.getElementById('progressBar');
     const progressContainer = document.getElementById('progressContainer');
-    let progress = 0;
-    progressContainer.style.display = 'block';
+    if (progressContainer) {
+        progressContainer.style.display = 'block';
+    }
 
+    // Simulate upload progress
+    let progress = 0;
     const interval = setInterval(() => {
         progress += 10;
-        progressBar.style.width = progress + '%';
+        if (progressBar) {
+            progressBar.style.width = progress + '%';
+        }
 
         if (progress >= 100) {
             clearInterval(interval);
-
-            // Submit the form via AJAX
-            fetch('/index', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show confirmation modal
-                    const modal = document.getElementById('confirmationModal');
-                    modal.style.display = 'flex';
-
-                    // Clear the selected files and file list
-                    selectedFiles = [];
-                    updateFileList();
-                }
-            })
-            .catch(error => {
-                alert('An error occurred while submitting the form.');
-            });
+            submitForm(formData);
         }
-    }, 200); // Simulate progress every 200ms
-});
+    }, 200);
+}
 
-// Close confirmation modal
-document.getElementById('closeModal').addEventListener('click', function () {
-    const modal = document.getElementById('confirmationModal');
-    modal.style.display = 'none';
-});
+// Submit form data to server
+function submitForm(formData) {
+    fetch('/index', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const progressContainer = document.getElementById('progressContainer');
+        if (progressContainer) {
+            progressContainer.style.display = 'none';
+        }
 
-// Event delegation for "Mark as Done" and "Remove" buttons in the admin panel
-document.addEventListener('click', function (event) {
-    // Handle "Mark as Done" button
-    if (event.target.classList.contains('mark-done-btn')) {
-        const row = event.target.closest('tr');
-        const orderId = row.dataset.orderId;
+        if (data.success) {
+            const modal = document.getElementById('confirmationModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+            selectedFiles = [];
+            updateFileList();
+        } else {
+            alert(data.message || 'An error occurred while uploading the files.');
+        }
+    })
+    .catch(error => {
+        console.error('Error uploading files:', error);
+        alert('An error occurred while uploading the files.');
+    });
+}
 
-        fetch(`/mark_done/${orderId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Move the row to the "Completed Orders" table
-                    const completedTableBody = document.querySelector('#completedOrdersTable tbody');
-                    completedTableBody.appendChild(row);
+// Try both methods to ensure the script runs
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeEventHandlers);
+} else {
+    initializeEventHandlers();
+}
 
-                    // Remove action buttons from the row
-                    const actionsCell = row.querySelector('td:last-child');
-                    actionsCell.innerHTML = ''; // Clear the buttons
-                }
-            });
-    }
-
-    // Handle "Remove" button
-    if (event.target.classList.contains('remove-order-btn')) {
-        const row = event.target.closest('tr');
-        const orderId = row.dataset.orderId;
-
-        fetch(`/remove_order/${orderId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    row.remove(); // Remove the row from the table
-                }
-            });
-    }
-});
+// Log when the script loads
+console.log('Script loaded');
