@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xerox Shop - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <h1 class="fade-in">Xerox Shop</h1>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="fade-in">Home</a></li>
+                <li><a href="{{ url_for('index') }}" class="fade-in">Place Order</a></li>
+                <li><a href="{{ url_for('login') }}" class="fade-in">Admin Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero fade-in">
+            <div class="hero-content">
+                <h2>Welcome to Xerox Shop</h2>
+                <p>Your one-stop solution for all your printing needs!</p>
+                <a href="{{ url_for('index') }}" class="cta-btn">Place Your Order Now</a>
+            </div>
+        </section>
+
+        <section class="services fade-in">
+            <h2>Our Services</h2>
+            <div class="service-cards">
+                <div class="service-card">
+                    <h3>Black & White Printing</h3>
+                    <p>High-quality black & white prints at affordable prices.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Color Printing</h3>
+                    <p>Vibrant and sharp color prints for all your documents.</p>
+                </div>
+                <div class="service-card">
+                    <h3>Custom Orders</h3>
+                    <p>Special instructions? We’ve got you covered!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer fade-in">
+        <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
+    </footer>
+</body>
+</html>

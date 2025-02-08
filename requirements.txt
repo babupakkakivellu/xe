@@ -1,0 +1,5 @@
+Flask==2.0.1
+google-auth-oauthlib==0.4.6
+google-auth-httplib2==0.1.0
+google-api-python-client==2.33.0
+PyPDF2==1.26.0
