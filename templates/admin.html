@@ -18,11 +18,23 @@
             </ul>
         </nav>
     </header>
-
     <main class="container">
+        <!-- Search and Filter -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search orders...">
+            <select id="filterStatus">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+
         <!-- Pending Orders Section -->
         <div class="card">
             <h2>Pending Orders</h2>
+            {% if not pending_orders %}
+            <p class="empty-state">No pending orders.</p>
+            {% else %}
             <table id="pendingOrdersTable">
                 <thead>
                     <tr>
@@ -44,19 +56,23 @@
                         <td>{{ order[4] }}</td>
                         <td>{{ order[5] }}</td>
                         <td>{{ order[6] }}</td>
-                        <td>
-                            <button class="mark-done-btn">Mark as Done</button>
-                            <button class="remove-order-btn">Remove</button>
+                        <td class="actions">
+                            <button class="mark-done-btn" title="Mark as Done">✔️</button>
+                            <button class="remove-order-btn" title="Remove">❌</button>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
         </div>
 
         <!-- Completed Orders Section -->
         <div class="card">
             <h2>Completed Orders</h2>
+            {% if not completed_orders %}
+            <p class="empty-state">No completed orders.</p>
+            {% else %}
             <table id="completedOrdersTable">
                 <thead>
                     <tr>
@@ -81,9 +97,15 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <button>Previous</button>
+            <button>Next</button>
         </div>
     </main>
-
     <footer class="footer">
         <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
     </footer>

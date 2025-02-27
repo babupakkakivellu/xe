@@ -6,8 +6,8 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f9ff; /* Light blue background */
     color: #333;
     line-height: 1.6;
     animation: fadeIn 1s ease-in-out;
@@ -18,7 +18,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    background: linear-gradient(135deg, #007bff, #0056b3); /* Blue gradient */
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -41,13 +41,13 @@ body {
 }
 
 .nav-links a:hover {
-    color: #f9f9f9;
+    color: #e0f7fa; /* Light blue hover effect */
     text-decoration: underline;
 }
 
 .logout-btn {
     float: right;
-    background: #d9534f;
+    background: #0d6efd; /* Bright blue */
     color: white;
     padding: 10px 15px;
     border-radius: 5px;
@@ -56,7 +56,7 @@ body {
 }
 
 .logout-btn:hover {
-    background: #c9302c;
+    background: #0b5ed7; /* Darker blue */
 }
 
 .container {
@@ -71,6 +71,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
 }
 
 .card:hover {
@@ -81,7 +82,7 @@ body {
 .card h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: #4CAF50;
+    color: #007bff; /* Blue heading */
     font-size: 1.8rem;
     font-weight: 600;
 }
@@ -90,7 +91,7 @@ label {
     display: block;
     margin-top: 15px;
     font-weight: bold;
-    color: #4CAF50;
+    color: #007bff; /* Blue labels */
 }
 
 input[type="text"], input[type="file"], textarea {
@@ -104,9 +105,9 @@ input[type="text"], input[type="file"], textarea {
 }
 
 input[type="text"]:focus, input[type="file"]:focus, textarea:focus {
-    border-color: #4CAF50;
+    border-color: #007bff; /* Blue focus effect */
     outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 textarea {
@@ -129,7 +130,7 @@ textarea {
 .checkmark {
     width: 18px;
     height: 18px;
-    border: 2px solid #4CAF50;
+    border: 2px solid #007bff; /* Blue checkbox border */
     border-radius: 4px;
     margin-right: 8px;
     position: relative;
@@ -144,7 +145,7 @@ textarea {
     transform: translate(-50%, -50%) scale(0);
     width: 10px;
     height: 10px;
-    background: #4CAF50;
+    background: #007bff; /* Blue checkmark */
     border-radius: 2px;
     transition: transform 0.2s ease;
 }
@@ -158,7 +159,7 @@ button {
     width: 100%;
     padding: 12px;
     margin-top: 20px;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    background: linear-gradient(135deg, #007bff, #0056b3); /* Blue gradient button */
     color: white;
     border: none;
     border-radius: 8px;
@@ -168,22 +169,22 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(135deg, #388E3C, #2E7D32);
+    background: linear-gradient(135deg, #0056b3, #004085); /* Darker blue on hover */
 }
 
 .progress-container {
     width: 100%;
-    background: #e0e0e0;
+    background: #e0f7fa; /* Light blue progress container */
     border-radius: 5px;
     overflow: hidden;
     margin-top: 10px;
-    height: 6px; /* Compact height */
+    height: 6px;
 }
 
 .progress-bar {
     width: 0%;
     height: 100%;
-    background: #4CAF50;
+    background: #007bff; /* Blue progress bar */
     transition: width 0.3s ease;
 }
 
@@ -210,7 +211,7 @@ button:hover {
 }
 
 .modal-content button {
-    background: #4CAF50;
+    background: #007bff; /* Blue modal button */
     color: white;
     padding: 10px 20px;
     border: none;
@@ -220,18 +221,32 @@ button:hover {
 }
 
 .modal-content button:hover {
-    background: #45a049;
+    background: #0056b3; /* Darker blue on hover */
 }
 
 .footer {
-    text-align: center;
-    padding: 10px;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
-    margin-top: 20px;
-    border-radius: 8px;
+    text-align: center;
+    padding: 20px;
 }
 
+.social-links {
+    margin-top: 10px;
+}
+
+.social-links a {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #e0f7fa;
+}
+
+/* Hero Section */
 .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://via.placeholder.com/1920x1080');
     background-size: cover;
@@ -239,8 +254,7 @@ button:hover {
     color: white;
     text-align: center;
     padding: 100px 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    border-radius: 0 0 12px 12px;
 }
 
 .hero-content {
@@ -260,7 +274,7 @@ button:hover {
 }
 
 .cta-btn {
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
     padding: 12px 20px;
     border-radius: 8px;
@@ -270,7 +284,16 @@ button:hover {
 }
 
 .cta-btn:hover {
-    background: linear-gradient(135deg, #388E3C, #2E7D32);
+    background: linear-gradient(135deg, #0056b3, #004085);
+}
+
+/* Services Section */
+.section-title {
+    text-align: center;
+    margin: 40px 0 20px;
+    color: #007bff;
+    font-size: 2rem;
+    font-weight: 600;
 }
 
 .service-cards {
@@ -295,10 +318,16 @@ button:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
+.service-icon {
+    font-size: 2.5rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
 .service-card h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    color: #4CAF50;
+    color: #007bff;
 }
 
 .service-card p {
@@ -306,12 +335,379 @@ button:hover {
     color: #555;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+/* About Section */
+.about-section {
+    background-color: #f9f9f9;
+    padding: 40px 0;
 }
+
+.about-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.about-text {
+    flex: 1;
+}
+
+.about-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    background-color: #e0f7fa;
+    padding: 40px 0;
+}
+
+.testimonial-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.testimonial-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.testimonial-card p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.testimonial-author {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Admin Panel Enhancements */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f9ff; /* Light blue header */
+    color: #007bff; /* Blue text */
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+tr:hover {
+    background-color: #e0f7fa; /* Hover effect */
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+button.mark-done-btn, button.remove-order-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button.mark-done-btn {
+    background-color: #28a745; /* Green for Mark as Done */
+    color: white;
+}
+
+button.mark-done-btn:hover {
+    background-color: #218838; /* Darker green */
+}
+
+button.remove-order-btn {
+    background-color: #dc3545; /* Red for Remove */
+    color: white;
+}
+
+button.remove-order-btn:hover {
+    background-color: #c82333; /* Darker red */
+}
+
+/* Search and Filter */
+.search-bar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-bar input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.search-bar select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+}
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        color: #6c757d;
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+    
+    /* Login Page */
+    .login-container {
+        display: flex;
+        min-height: 100vh;
+    }
+    
+    /* Left Side: Background */
+    .login-background {
+        flex: 1;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .login-background h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .login-background p {
+        font-size: 1.2rem;
+        max-width: 400px;
+    }
+    
+    /* Right Side: Login Form */
+    .login-form {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f9ff; /* Light blue background */
+        padding: 20px;
+    }
+    
+    /* Login Card */
+    .login-card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center; /* Center-align all content */
+    }
+    
+    .login-card h2 {
+        font-size: 1.8rem;
+        color: #007bff;
+        margin-bottom: 20px; /* Add spacing below the heading */
+    }
+    
+    /* Input Group */
+    .input-group {
+        position: relative;
+        margin-bottom: 15px; /* Add spacing between input fields */
+    }
+    
+    .input-group label {
+        position: absolute;
+        top: -10px; /* Move label above the input field */
+        left: 15px;
+        background: white;
+        padding: 0 5px;
+        font-size: 0.9rem;
+        color: #007bff;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .input-group input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+        top: -10px; /* Float label above the input field */
+        font-size: 0.9rem;
+        color: #007bff;
+    }
+    
+    /* Error Message */
+    .error-message {
+        color: #dc3545; /* Red color for errors */
+        font-size: 0.9rem;
+        margin-bottom: 15px; /* Add spacing below the error message */
+        text-align: left; /* Align text to the left */
+    }
+    
+    /* Button */
+    button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px; /* Add spacing above the button */
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    
+    button:hover {
+        background: linear-gradient(135deg, #0056b3, #004085); /* Darker blue on hover */
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            text-align: center;
+        }
+    
+        .nav-links {
+            flex-direction: column;
+            gap: 10px;
+        }
+    
+        .container {
+            padding: 10px;
+        }
+    
+        .hero {
+            padding: 60px 10px;
+        }
+    
+        .hero h2 {
+            font-size: 2rem;
+        }
+    
+        .hero p {
+            font-size: 1rem;
+        }
+    
+        .about-content {
+            flex-direction: column;
+        }
+    
+        .about-image img {
+            width: 100%;
+        }
+    
+        .service-card, .testimonial-card {
+            width: 100%;
+        }
+    
+        table {
+            font-size: 0.9rem;
+        }
+    
+        th, td {
+            padding: 8px;
+        }
+    
+        .actions {
+            flex-direction: column;
+            gap: 5px;
+        }
+    
+        /* Login Page Responsive Design */
+        .login-container {
+            flex-direction: column; /* Stack elements vertically */
+        }
+    
+        .login-background {
+            display: none; /* Hide the background on smaller screens */
+        }
+    
+        .login-form {
+            flex: none;
+            padding: 20px;
+        }
+    
+        .login-card {
+            padding: 20px;
+        }
+    
+        .input-group input {
+            font-size: 0.9rem; /* Reduce font size for smaller screens */
+        }
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }

@@ -7,44 +7,43 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="header">
-        <h1 class="fade-in">Xerox Shop</h1>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="{{ url_for('home') }}" class="fade-in">Home</a></li>
-                <li><a href="{{ url_for('index') }}" class="fade-in">Place Order</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="card fade-in">
-            <h2>Admin Login</h2>
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for message in messages %}
-                            <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-
-            <form action="{{ url_for('login') }}" method="POST">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-
-                <button type="submit">Login</button>
-            </form>
+    <!-- Split Screen Layout -->
+    <div class="login-container">
+        <!-- Left Side: Gradient Background -->
+        <div class="login-background">
+            <h1>Welcome Back!</h1>
+            <p>Please log in to access the admin panel.</p>
         </div>
-    </main>
 
-    <footer class="footer fade-in">
-        <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
-    </footer>
+        <!-- Right Side: Login Form -->
+        <div class="login-form">
+            <div class="card login-card">
+                <h2>Admin Login</h2>
+                <form id="loginForm" method="POST">
+                    <!-- Username Field -->
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message" class="error-message" style="display: none;">
+                        Invalid username or password. Please try again.
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

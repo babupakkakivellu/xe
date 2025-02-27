@@ -8,79 +8,82 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <h1 class="fade-in">Xerox Shop</h1>
         <nav>
             <ul class="nav-links">
                 <li><a href="{{ url_for('home') }}" class="fade-in">Home</a></li>
-                <li><a href="{{ url_for('index') }}" class="fade-in">Place Order</a></li>
                 <li><a href="{{ url_for('login') }}" class="fade-in">Admin Login</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- Order Form -->
     <main class="container">
-        <div class="card fade-in">
+        <div class="card">
             <h2>Place Your Order</h2>
-
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for message in messages %}
-                            <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-
-            <form id="uploadForm">
-                <label for="customer_name">Your Name:</label>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <!-- Customer Name -->
+                <label for="customer_name">Customer Name</label>
                 <input type="text" id="customer_name" name="customer_name" placeholder="Enter your name" required>
 
-                <label for="documents">Upload Documents:</label>
-                <input type="file" id="documents" name="documents" accept=".pdf,.jpg,.jpeg,.png" multiple>
-                <small class="hint">Supported formats: PDF, JPG, PNG</small>
+                <!-- File Upload -->
+                <label for="documents">Upload Files</label>
+                <input type="file" id="documents" name="documents" multiple accept=".pdf,.doc,.docx,.jpg,.png" required>
+                <div id="file-list">
+                    <p>No files selected.</p>
+                </div>
 
-                <div id="file-list"></div>
+                <!-- Pages to Print -->
+                <label for="pages_to_print">Pages to Print (e.g., 1, 3-5)</label>
+                <input type="text" id="pages_to_print" name="pages_to_print" placeholder="e.g., 1, 3-5" required>
 
-                <label>Select Pages Color:</label>
+                <!-- Color Preferences -->
+                <label>Color Preferences</label>
                 <div class="checkbox-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="pages_color" value="black_white">
+                    <div class="checkbox-label">
                         <span class="checkmark"></span>
+                        <input type="checkbox" id="color_black" name="pages_color" value="Black & White">
                         Black & White
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="pages_color" value="color">
+                    </div>
+                    <div class="checkbox-label">
                         <span class="checkmark"></span>
+                        <input type="checkbox" id="color_color" name="pages_color" value="Color">
                         Color
-                    </label>
+                    </div>
                 </div>
 
-                <label for="pages_to_print">Pages to Print:</label>
-                <input type="text" id="pages_to_print" name="pages_to_print" placeholder="e.g., 1-5, 7, 9-12">
+                <!-- Special Instructions -->
+                <label for="special_instructions">Special Instructions</label>
+                <textarea id="special_instructions" name="special_instructions" placeholder="Any additional instructions?"></textarea>
 
-                <label for="special_instructions">Special Instructions:</label>
-                <textarea id="special_instructions" name="special_instructions" placeholder="Any specific instructions?"></textarea>
-
-                <button type="submit" id="submitButton">Submit Order</button>
-                <div class="progress-container" id="progressContainer" style="display: none;">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
+                <!-- Submit Button -->
+                <button type="submit">Submit Order</button>
             </form>
+
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
     </main>
 
-    <footer class="footer fade-in">
-        <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
-    </footer>
-
     <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="modal">
+    <div class="modal" id="confirmationModal">
         <div class="modal-content">
-            <p>Your order has been placed successfully!</p>
+            <i class="fas fa-check-circle success-icon"></i>
+            <h3>Order Submitted Successfully!</h3>
+            <p>Your order has been received. We will process it shortly.</p>
             <button id="closeModal">Close</button>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xerox Shop - Home</title>
+    <title>Xerox Shop</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <h1 class="fade-in">Xerox Shop</h1>
         <nav>
@@ -18,36 +19,79 @@
         </nav>
     </header>
 
-    <main class="container">
-        <section class="hero fade-in">
-            <div class="hero-content">
-                <h2>Welcome to Xerox Shop</h2>
-                <p>Your one-stop solution for all your printing needs!</p>
-                <a href="{{ url_for('index') }}" class="cta-btn">Place Your Order Now</a>
-            </div>
-        </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Welcome to Xerox Shop</h2>
+            <p>Your one-stop solution for all printing and document management needs.</p>
+            <a href="{{ url_for('index') }}" class="cta-btn">Place Your Order Now</a>
+        </div>
+    </section>
 
-        <section class="services fade-in">
-            <h2>Our Services</h2>
-            <div class="service-cards">
-                <div class="service-card">
-                    <h3>Black & White Printing</h3>
-                    <p>High-quality black & white prints at affordable prices.</p>
+    <!-- Services Section -->
+    <section class="container">
+        <h2 class="section-title">Our Services</h2>
+        <div class="service-cards">
+            <div class="service-card">
+                <i class="fas fa-print service-icon"></i>
+                <h3>Document Printing</h3>
+                <p>High-quality printing services for all your documents.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-copy service-icon"></i>
+                <h3>Photocopying</h3>
+                <p>Quick and affordable photocopying solutions.</p>
+            </div>
+            <div class="service-card">
+                <i class="fas fa-file-pdf service-icon"></i>
+                <h3>Digital Scanning</h3>
+                <p>Convert your physical documents into digital formats.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About Us</h2>
+                    <p>We are a trusted Xerox shop dedicated to providing high-quality printing and document management services. Our mission is to deliver fast, reliable, and affordable solutions to meet your needs.</p>
                 </div>
-                <div class="service-card">
-                    <h3>Color Printing</h3>
-                    <p>Vibrant and sharp color prints for all your documents.</p>
-                </div>
-                <div class="service-card">
-                    <h3>Custom Orders</h3>
-                    <p>Special instructions? We’ve got you covered!</p>
+                <div class="about-image">
+                    <img src="https://via.placeholder.com/400x300" alt="About Us">
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer class="footer fade-in">
-        <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <div class="testimonial-cards">
+                <div class="testimonial-card">
+                    <p>"Great service! Fast and reliable printing."</p>
+                    <p class="testimonial-author">- John Doe</p>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The staff was friendly, and the quality was excellent."</p>
+                    <p class="testimonial-author">- Jane Smith</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Xerox Shop. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
     </footer>
 </body>
 </html>

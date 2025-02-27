@@ -1,25 +1,23 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
 import os
 import tempfile
 import sqlite3
 import pickle
-import time  # For retry delays
-import uuid  # For generating unique filenames
+import uuid
+import mimetypes
+import re  # For input validation
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# Load the token.pickle file
+# Load credentials and initialize Drive service
 with open('token.pickle', 'rb') as token:
     creds = pickle.load(token)
-
-# Initialize Google Drive service
 service = build('drive', 'v3', credentials=creds)
 
-# Folder ID where files will be uploaded
 FOLDER_ID = '1j83pj6sIL2mfNiWFqOYbb21vvNvlTwqd'
 
 # Database setup
@@ -43,118 +41,120 @@ def init_db():
 
 init_db()
 
-# Helper function to parse pages input
-def parse_pages(pages_input):
-    """Parse the pages input into a list of integers."""
-    pages = []
-    try:
-        for part in pages_input.split(','):
-            part = part.strip()
-            if '-' in part:
-                start, end = map(int, part.split('-'))
-                pages.extend(range(start, end + 1))
-            else:
-                pages.append(int(part))
-    except Exception as e:
-        flash(f"Invalid page format: {str(e)}")
-        return []
-    return sorted(set(pages))  # Remove duplicates and sort
+# Input Validation
+def validate_pages_input(pages_to_print):
+    """
+    Validates the pages_to_print input.
+    Returns True if valid, False otherwise.
+    """
+    pattern = r'^[\d,\-\s]+$'  # Allow digits, commas, hyphens, and spaces only
+    return bool(re.match(pattern, pages_to_print))
 
-# Home page
+# Parse Pages Function
+def parse_pages(pages_input):
+    """
+    Parses a string of page ranges (e.g., "1, 3-5") into a list of integers.
+    Handles invalid inputs gracefully.
+    """
+    pages = []
+    for part in pages_input.split(','):
+        part = part.strip()
+        if '-' in part:  # Handle ranges like "3-5"
+            try:
+                start, end = map(int, part.split('-'))
+                if start <= end:
+                    pages.extend(range(start, end + 1))
+                else:
+                    print(f"Invalid range: {part}")
+            except ValueError:
+                print(f"Invalid range format: {part}")
+        else:  # Handle single numbers like "1"
+            try:
+                pages.append(int(part))
+            except ValueError:
+                print(f"Invalid page number: {part}")
+    return sorted(set(pages))  # Remove duplicates and sort the list
+
+# Routes
 @app.route('/')
 @app.route('/home')
 def home():
     return render_template('home.html')
 
-# Order form page
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Get form data
         customer_name = request.form['customer_name']
         documents = request.files.getlist('documents')
         pages_color = ', '.join(request.form.getlist('pages_color'))
         pages_to_print = request.form['pages_to_print']
         special_instructions = request.form['special_instructions']
 
-        if not documents or all(doc.filename == '' for doc in documents):
-            return jsonify({'success': False, 'message': 'No selected files'})
+        # Validate required fields
+        if not customer_name:
+            return jsonify({'success': False, 'message': 'Customer name is required.'}), 400
 
-        # Parse pages to print
+        if not documents or all(doc.filename == '' for doc in documents):
+            return jsonify({'success': False, 'message': 'No selected files.'}), 400
+
+        # Validate pages_to_print format
+        if not validate_pages_input(pages_to_print):
+            return jsonify({'success': False, 'message': 'Invalid input format for pages. Please use numbers, commas, and hyphens only.'}), 400
+
+        # Parse pages
         parsed_pages = parse_pages(pages_to_print)
         if not parsed_pages:
-            return jsonify({'success': False, 'message': 'Please enter valid page numbers.'})
+            return jsonify({'success': False, 'message': 'Invalid page numbers.'}), 400
 
-        # Process each file
+        # Process each document
         for document in documents:
             if document.filename == '':
                 continue
 
-            # Create a unique temporary file path
             temp_dir = tempfile.gettempdir()
             filepath = os.path.join(temp_dir, f"upload_{uuid.uuid4()}.tmp")
-            media = None
 
             try:
-                # Save the uploaded file to the temporary location
                 document.save(filepath)
 
-                # Upload the file to Google Drive
-                file_metadata = {
-                    'name': document.filename,
-                    'parents': [FOLDER_ID]
-                }
-                
-                # Create the media file upload object
-                media = MediaFileUpload(filepath, resumable=True)
-                
-                # Perform the upload
-                file = service.files().create(
-                    body=file_metadata,
-                    media_body=media,
-                    fields='id, webViewLink'
-                ).execute()
-                
+                # Determine MIME type
+                mimetype, _ = mimetypes.guess_type(document.filename)
+                if mimetype is None:
+                    mimetype = 'application/octet-stream'
+
+                file_metadata = {'name': document.filename, 'parents': [FOLDER_ID]}
+
+                with open(filepath, 'rb') as fh:
+                    media = MediaIoBaseUpload(fh, mimetype=mimetype, resumable=True)
+                    file = service.files().create(
+                        body=file_metadata,
+                        media_body=media,
+                        fields='id, webViewLink'
+                    ).execute()
+
                 drive_link = file.get('webViewLink')
 
                 # Save order details to the database
                 conn = sqlite3.connect('orders.db')
                 c = conn.cursor()
                 c.execute('''
-                    INSERT INTO orders (customer_name, file_name, drive_link, pages_to_print, pages_color, special_instructions)
+                    INSERT INTO orders 
+                    (customer_name, file_name, drive_link, pages_to_print, pages_color, special_instructions)
                     VALUES (?, ?, ?, ?, ?, ?)
                 ''', (customer_name, document.filename, drive_link, pages_to_print, pages_color, special_instructions))
                 conn.commit()
                 conn.close()
 
             except Exception as e:
-                print(f"Error uploading file: {str(e)}")
-                return jsonify({'success': False, 'message': f'Error uploading file: {str(e)}'})
-            
+                print(f"Error: {str(e)}")
+                return jsonify({'success': False, 'message': f'Error: {str(e)}'}), 500
+
             finally:
-                # Clean up resources
-                if media:
-                    media._fd.close()  # Close the file descriptor used by MediaFileUpload
-                
-                # Retry file deletion with exponential backoff
-                max_retries = 5
-                base_delay = 0.5  # Start with 0.5 second delay
-                
-                for attempt in range(max_retries):
+                if os.path.exists(filepath):
                     try:
-                        if os.path.exists(filepath):
-                            os.close(os.open(filepath, os.O_RDONLY))  # Close any remaining file handles
-                            os.remove(filepath)
-                            print(f"Temporary file deleted successfully: {filepath}")
-                            break
-                    except (PermissionError, OSError) as e:
-                        if attempt == max_retries - 1:  # Last attempt
-                            print(f"Failed to delete temporary file after {max_retries} attempts: {filepath}")
-                            print(f"Error: {str(e)}")
-                        else:
-                            delay = base_delay * (2 ** attempt)  # Exponential backoff
-                            print(f"Attempt {attempt + 1} failed to delete file: {filepath}. Retrying in {delay} seconds...")
-                            time.sleep(delay)
+                        os.remove(filepath)
+                    except Exception as e:
+                        print(f"Error deleting file: {e}")
 
         return jsonify({'success': True, 'message': 'Files uploaded successfully!'})
 
@@ -173,6 +173,7 @@ def login():
             return redirect(url_for('admin'))
         else:
             flash('Invalid username or password')
+
     return render_template('login.html')
 
 # Admin page to view orders
